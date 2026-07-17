@@ -133,7 +133,7 @@
               </ResponseAssertion>
               <hashTree/>
             </hashTree>
-            <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="JSR223 PostProcessor">
+            <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="JSR223 PostProcessor" enabled="true">
               <stringProp name="cacheKey">true</stringProp>
               <stringProp name="filename"></stringProp>
               <stringProp name="parameters"></stringProp>
@@ -165,7 +165,7 @@ log.info(&quot;To Port: ${toPort}&quot;)</stringProp>
             <boolProp name="TransactionController.includeTimers">false</boolProp>
           </TransactionController>
           <hashTree>
-            <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="TC_01 LaunchHomePage-48">
+            <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="TC_01 LaunchHomePage-48" enabled="true">
               <stringProp name="HTTPSampler.port">443</stringProp>
               <stringProp name="HTTPSampler.contentEncoding">UTF-8</stringProp>
               <stringProp name="HTTPSampler.path">/reserve.php</stringProp>
@@ -262,7 +262,7 @@ log.info(&quot;To Port: ${toPort}&quot;)</stringProp>
                 </collectionProp>
               </HeaderManager>
               <hashTree/>
-              <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion">
+              <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion" enabled="true">
                 <collectionProp name="Asserion.test_strings">
                   <stringProp name="2025320375">Flights from ${fromPort} to ${toPort}:</stringProp>
                 </collectionProp>
@@ -279,35 +279,48 @@ log.info(&quot;To Port: ${toPort}&quot;)</stringProp>
               <stringProp name="filename"></stringProp>
               <stringProp name="cacheKey">true</stringProp>
               <stringProp name="script">import org.jsoup.Jsoup
-import java.util.*
 
 def html = prev.getResponseDataAsString()
 def doc = Jsoup.parse(html)
+
 def rows = doc.select(&quot;table tr&quot;)
-def maxPrice = 0.0
+
+def maxPrice = Double.MIN_VALUE
 def targetRow = -1
-for(int i =1;i&lt;rows.size();i++){
-	def cols =  rows.get(i).select(&quot;td&quot;)
-	if(cols.size()&gt;=6){
-		def priceText = cols.get(5).text().replace(&quot;\$&quot;,&quot;&quot;).trim()
-		def price = priceText.toDouble()
-		if(price &gt; maxPrice){
-			maxPrice = price
-			targetRow = i
-		}
-	}
+
+for (int i = 1; i &lt; rows.size(); i++) {
+
+    def cols = rows.get(i).select(&quot;td&quot;)
+
+    if (cols.size() &gt;= 6) {
+
+        def priceText = cols.get(5).text().replace(&apos;$&apos;, &apos;&apos;).trim()
+        def currentPrice = priceText.toDouble()
+
+        if (currentPrice &gt; maxPrice) {
+            maxPrice = currentPrice
+            targetRow = i
+        }
+    }
 }
-if(targetRow != -1){
-	def selectedCols = rows.get(targetRow).select(&quot;td&quot;)
-	def flight = selectedCols.get(1).text().trim()
-	def price = selectedCols.get(5).text().trim()
-	def airline = selectedCols.get(2).text().trim()
 
-	vars.put(&quot;selectedFlight&quot;,flight)
-	vars.put(&quot;selectedPrice&quot;, price)
-	vars.put(&quot;selectedAirline&quot;, airline)
+if (targetRow != -1) {
 
-	log.info(&quot;Selected Flight: $selectedFlight, Selected Price: $selectedPrice, Selected Airlinr: $selectedAirline&quot;)
+    def selectedCols = rows.get(targetRow).select(&quot;td&quot;)
+
+    def flight = selectedCols.get(1).text().trim()
+    def airline = selectedCols.get(2).text().trim()
+    def price = selectedCols.get(5).text().trim()
+
+    vars.put(&quot;selectedFlight&quot;, flight)
+    vars.put(&quot;selectedAirline&quot;, airline)
+    vars.put(&quot;selectedPrice&quot;, price)
+
+    log.info(&quot;Selected Flight : ${flight}&quot;)
+    log.info(&quot;Selected Airline : ${airline}&quot;)
+    log.info(&quot;Selected Price : ${price}&quot;)
+} else {
+    log.warn(&quot;No flight found.&quot;)
 }</stringProp>
             </JSR223PostProcessor>
             <hashTree/>
@@ -434,7 +447,7 @@ if(targetRow != -1){
                 </collectionProp>
               </HeaderManager>
               <hashTree/>
-              <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion">
+              <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion" enabled="true">
                 <collectionProp name="Asserion.test_strings">
                   <stringProp name="-1097302452">Your flight from TLV to SFO has been reserved.</stringProp>
                 </collectionProp>
@@ -631,7 +644,7 @@ if(targetRow != -1){
           </hashTree>
         </hashTree>
       </hashTree>
-      <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree">
+      <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
         <boolProp name="ResultCollector.error_logging">false</boolProp>
         <objProp>
           <name>saveConfig</name>
